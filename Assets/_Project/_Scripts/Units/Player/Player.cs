@@ -1,4 +1,3 @@
-using System.Runtime.CompilerServices;
 using _Project._Scripts.Managers.Systems;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -33,7 +32,10 @@ namespace _Project._Scripts.Units.Player
         private Vector2 _lastMovement = Vector2.zero;
         private Vector2 _movement;
         public Animator animator;
+        
+        // Lighting
         public Transform flashlightTransform;
+        private Quaternion _targetRotation;
 
         // Managers
         private Inventory _inventory;
@@ -73,11 +75,9 @@ namespace _Project._Scripts.Units.Player
             animator.SetFloat(Speed, _movement.sqrMagnitude);
 
             // Only rotate the flashlight if movement direction changes
-            if (_movement != Vector2.zero && _movement != _lastMovement)
-            {
-                RotateFlashlight();
-                _lastMovement = _movement; // Update previous movement
-            }
+            if (_movement == Vector2.zero || _movement == _lastMovement) return;
+            RotateFlashlight();
+            _lastMovement = _movement; // Update previous movement
         }
 
         // Physics (fixed timer) 
@@ -104,16 +104,23 @@ namespace _Project._Scripts.Units.Player
                     break;
             }
         }
-        
         private void RotateFlashlight()
         {
             if (_movement != Vector2.zero)
             {
                 float angle = Mathf.Atan2(_movement.y, _movement.x) * Mathf.Rad2Deg;
-                flashlightTransform.rotation = Quaternion.Euler(0, 0, angle - 90);
+                _targetRotation = Quaternion.Euler(0, 0, angle - 90);
             }
         }
-        
+
+        // Smooth rotation in LateUpdate()
+        private void LateUpdate()
+        {
+            flashlightTransform.rotation =
+                Quaternion.Slerp(flashlightTransform.rotation, _targetRotation, Time.deltaTime * 10f);
+        }
+
+
         // Collision detection
         private void OnTriggerEnter2D(Collider2D collision)
         {

@@ -17,7 +17,10 @@ using UnityEngine;
  ***************************************************
  * Note: sprites in the Collectable Spawner are    *
  * only placeholders; the actual rendered sprites  *
- * are determined by ItemAssets.cs in Unity              *
+ * are determined by ItemAssets.cs in Unity        *
+ * The actual size of sprites rendered is determined
+ * by pfCollectables prefab in Unity collectables  *
+ * folder!                                         *
  ****************************************************/
 
 namespace _Project._Scripts.Managers.Systems

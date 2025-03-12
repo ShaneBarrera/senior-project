@@ -54,8 +54,17 @@ TagManager:
   - name: Collectables
     uniqueID: 2031728855
     locked: 0
+  - name: BehindPlayer
+    uniqueID: 108743843
+    locked: 0
   - name: Player
     uniqueID: 1576023527
+    locked: 0
+  - name: AbovePlayer
+    uniqueID: 3767824133
+    locked: 0
+  - name: Fog
+    uniqueID: 241102317
     locked: 0
   m_RenderingLayers:
   - Default

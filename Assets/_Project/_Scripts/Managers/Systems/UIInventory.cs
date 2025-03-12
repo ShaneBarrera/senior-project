@@ -78,8 +78,8 @@ namespace _Project._Scripts.Managers.Systems
 
             var x = 0;
             var y = 0;
-            const float itemSlotCellSize = 50.0f;
-            const int maxColumns = 3; // Adjust as needed for UI layout
+            const float itemSlotCellSize = 40.0f;
+            const int maxColumns = 4; // Adjust as needed for UI layout
             foreach (var item in _inventory.GetItemList())
             {
                 var itemSlotRectTransform =
