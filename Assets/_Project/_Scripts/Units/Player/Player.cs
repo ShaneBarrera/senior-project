@@ -1,4 +1,5 @@
 using _Project._Scripts.Managers.Systems;
+using _Project._Scripts.ScriptableObjects;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -29,6 +30,7 @@ namespace _Project._Scripts.Units.Player
         // Variables for movement
         public float moveSpeed = 5.0f;
         public Rigidbody2D rb;
+        public VectorValue startPosition;
         private Vector2 _lastMovement = Vector2.zero;
         private Vector2 _movement;
         public Animator animator;
@@ -56,6 +58,8 @@ namespace _Project._Scripts.Units.Player
             _inventory = new Inventory(UseItem);
             uiInventory.SetPlayer(this);
             uiInventory.SetInventory(_inventory);
+            
+            transform.position = startPosition.initialValue;
         }
 
         private void Awake()
@@ -83,7 +87,11 @@ namespace _Project._Scripts.Units.Player
         // Physics (fixed timer) 
         private void FixedUpdate()
         {
-            // Constant movement speed
+            if (_movement != Vector2.zero)
+            {
+                _movement = _movement.normalized; // Normalize to maintain consistent speed
+            }
+    
             rb.MovePosition(rb.position + _movement * (moveSpeed * Time.fixedDeltaTime));
         }
 

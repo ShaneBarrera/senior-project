@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 /****************************************************
@@ -23,6 +24,12 @@ namespace _Project._Scripts.Managers.Systems
         private const float ZPos = -10;
 
         // Simple top-down camera that follows player's current position 
+
+        private void Start()
+        {
+            transform.position = playerTransform.position;
+        }
+
         private void Update()
         {
             transform.position = new Vector3(playerTransform.position.x, playerTransform.position.y, ZPos);
