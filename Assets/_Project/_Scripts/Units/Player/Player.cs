@@ -22,18 +22,18 @@ namespace _Project._Scripts.Units.Player
 {
     public class Player : MonoBehaviour
     {
-        // Movement IDs
-        private static readonly int Horizontal = Animator.StringToHash("Horizontal");
-        private static readonly int Vertical = Animator.StringToHash("Vertical");
-        private static readonly int Speed = Animator.StringToHash("Speed");
+        private static readonly int MoveX = Animator.StringToHash("moveX");
+        private static readonly int MoveY = Animator.StringToHash("moveY");
+        private static readonly int Moving = Animator.StringToHash("moving");
 
         // Variables for movement
-        public float moveSpeed = 5.0f;
-        public Rigidbody2D rb;
+        public float speed = 5f;
+        private Rigidbody2D _rb;
         public VectorValue startPosition;
-        private Vector2 _lastMovement = Vector2.zero;
-        private Vector2 _movement;
-        public Animator animator;
+        private Vector2 _change;
+        private Vector2 _lastMovement;
+        private Vector2 _movementDirection;
+        private Animator _animator;
         
         // Lighting
         public Transform flashlightTransform;
@@ -41,20 +41,73 @@ namespace _Project._Scripts.Units.Player
 
         // Managers
         private Inventory _inventory;
-
         [FormerlySerializedAs("ui_inventory")] [SerializeField]
         private UIInventory uiInventory;
 
-        public void Start()
+        private void Awake()
         {
-            // Ensure hierarchy correctly defines inventory 
+            _rb = GetComponent<Rigidbody2D>();
+            _animator = GetComponent<Animator>();
+        }
+
+        private void Start()
+        {
+            SetInventory();
+        }
+
+        private void Update()
+        {
+            HandleInput();
+            UpdateAnimation();
+            RotateFlashlight();
+        }
+
+        private void FixedUpdate()
+        {
+            MoveCharacter();
+        }
+
+        void HandleInput()
+        {
+            _change.x = Input.GetAxisRaw("Horizontal");
+            _change.y = Input.GetAxisRaw("Vertical");
+
+            if (_change != Vector2.zero)
+            {
+                _movementDirection = _change.normalized; // Normalize to maintain consistent speed
+            }
+        }
+
+        void MoveCharacter()
+        {
+            if (_change != Vector2.zero)
+            {
+                _rb.MovePosition(_rb.position + _movementDirection * (speed * Time.fixedDeltaTime));
+            }
+        }
+
+        void UpdateAnimation()
+        {
+            if (_change != Vector2.zero)
+            {
+                _animator.SetFloat(MoveX, _change.x);
+                _animator.SetFloat(MoveY, _change.y);
+                _animator.SetBool(Moving, true);
+            }
+            else
+            {
+                _animator.SetBool(Moving, false);
+            }
+        }
+
+        void SetInventory()
+        {
             if (uiInventory == null)
             {
                 Debug.LogError("PlayerMovement: UIInventory is not assigned in the Inspector!");
                 return;
             }
 
-            // Create new inventory and set
             _inventory = new Inventory(UseItem);
             uiInventory.SetPlayer(this);
             uiInventory.SetInventory(_inventory);
@@ -62,46 +115,11 @@ namespace _Project._Scripts.Units.Player
             transform.position = startPosition.initialValue;
         }
 
-        private void Awake()
-        {
-            rb = GetComponent<Rigidbody2D>();
-            animator = GetComponent<Animator>();
-        }
-
-        private void Update()
-        {
-            _movement.x = Input.GetAxisRaw("Horizontal");
-            _movement.y = Input.GetAxisRaw("Vertical");
-
-            // Animate the sprite
-            animator.SetFloat(Horizontal, _movement.x);
-            animator.SetFloat(Vertical, _movement.y);
-            animator.SetFloat(Speed, _movement.sqrMagnitude);
-
-            // Only rotate the flashlight if movement direction changes
-            if (_movement == Vector2.zero || _movement == _lastMovement) return;
-            RotateFlashlight();
-            _lastMovement = _movement; // Update previous movement
-        }
-
-        // Physics (fixed timer) 
-        private void FixedUpdate()
-        {
-            if (_movement != Vector2.zero)
-            {
-                _movement = _movement.normalized; // Normalize to maintain consistent speed
-            }
-    
-            rb.MovePosition(rb.position + _movement * (moveSpeed * Time.fixedDeltaTime));
-        }
-
-        // Get player current position 
         public Vector2 GetPosition()
         {
             return transform.position;
         }
 
-        // Use inventory items
         private void UseItem(Item item)
         {
             switch (item.itemType)
@@ -112,24 +130,21 @@ namespace _Project._Scripts.Units.Player
                     break;
             }
         }
+
         private void RotateFlashlight()
         {
-            if (_movement != Vector2.zero)
+            if (_change != Vector2.zero)
             {
-                float angle = Mathf.Atan2(_movement.y, _movement.x) * Mathf.Rad2Deg;
+                float angle = Mathf.Atan2(_change.y, _change.x) * Mathf.Rad2Deg;
                 _targetRotation = Quaternion.Euler(0, 0, angle - 90);
             }
         }
 
-        // Smooth rotation in LateUpdate()
         private void LateUpdate()
         {
-            flashlightTransform.rotation =
-                Quaternion.Slerp(flashlightTransform.rotation, _targetRotation, Time.deltaTime * 10f);
+            flashlightTransform.rotation = Quaternion.Slerp(flashlightTransform.rotation, _targetRotation, Time.deltaTime * 10f);
         }
 
-
-        // Collision detection
         private void OnTriggerEnter2D(Collider2D collision)
         {
             CollectableManager collectableManager = collision.GetComponent<CollectableManager>();
