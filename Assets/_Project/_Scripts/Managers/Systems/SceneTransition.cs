@@ -45,14 +45,12 @@ namespace _Project._Scripts.Managers.Systems
         public void OnTriggerEnter2D(Collider2D other)
         {
             // Trigger scene transition only if the object is the player, and it's not a trigger
-            if (other.CompareTag("Player") && !other.isTrigger)
-            {
-                playerStorage.initialValue = playerPosition;
-                StartCoroutine(FadeCoroutine());
-            }
+            if (!other.CompareTag("Player") || other.isTrigger) return;
+            playerStorage.initialValue = playerPosition;
+            StartCoroutine(FadeCoroutine());
         }
 
-        public IEnumerator FadeCoroutine()
+        private IEnumerator FadeCoroutine()
         {
             // Instantiate fadeOutPanel and wait before loading the scene
             if (fadeOutPanel)

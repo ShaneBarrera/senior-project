@@ -19,13 +19,20 @@ using UnityEngine;
 
 namespace _Project._Scripts.Units.Player
 {
+
+    public enum PlayerState
+    {
+        Alive,
+        Death
+    }
     public class Player : MonoBehaviour
     {
-        // Animator parameters
         private static readonly int MoveX = Animator.StringToHash("moveX");
         private static readonly int MoveY = Animator.StringToHash("moveY");
         private static readonly int Moving = Animator.StringToHash("moving");
 
+        private bool _isMovementLocked;
+        
         [SerializeField] private float speed = 5f;
         [SerializeField] private VectorValue startPosition;
         [SerializeField] private Transform flashlightTransform;
@@ -39,6 +46,8 @@ namespace _Project._Scripts.Units.Player
         private Vector2 _movementDirection;
         private Quaternion _targetRotation;
 
+        public PlayerState currentState; 
+
         private void Awake()
         {
             _rb = GetComponent<Rigidbody2D>();
@@ -47,6 +56,7 @@ namespace _Project._Scripts.Units.Player
 
         private void Start()
         {
+            currentState = PlayerState.Alive;
             InitializeInventory();
             transform.position = startPosition.initialValue;
         }
@@ -70,6 +80,12 @@ namespace _Project._Scripts.Units.Player
 
         private void ProcessInput()
         {
+            if (_isMovementLocked)
+            {
+                _movementInput = Vector2.zero; // Prevent movement input
+                return;
+            }
+            
             _movementInput.x = Input.GetAxisRaw("Horizontal");
             _movementInput.y = Input.GetAxisRaw("Vertical");
 
@@ -85,6 +101,11 @@ namespace _Project._Scripts.Units.Player
             {
                 _rb.MovePosition(_rb.position + _movementDirection * (speed * Time.fixedDeltaTime));
             }
+        }
+        public void LockMovement()
+        {
+            _isMovementLocked = true;
+            _movementInput = Vector2.zero;
         }
 
         private void UpdateAnimation()
@@ -129,12 +150,7 @@ namespace _Project._Scripts.Units.Player
             _inventory.AddItem(collectableManager.GetItem());
             collectableManager.DestroySelf();
         }
-
-        // New method to get the flashlight's facing direction as a Vector2
-        public Vector3 GetFlashlightDirection()
-        {
-            return flashlightTransform.right; // Assuming flashlight's local right is the facing direction
-        }
+        
         public Vector2 GetPosition() => transform.position;
     }
 }
