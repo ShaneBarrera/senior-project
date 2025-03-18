@@ -1,7 +1,6 @@
-using System.Runtime.CompilerServices;
 using _Project._Scripts.Managers.Systems;
+using _Project._Scripts.ScriptableObjects;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 /****************************************************
  *                  PLAYER CLASS                    *
@@ -20,109 +19,138 @@ using UnityEngine.Serialization;
 
 namespace _Project._Scripts.Units.Player
 {
+
+    public enum PlayerState
+    {
+        Alive,
+        Death
+    }
     public class Player : MonoBehaviour
     {
-        // Movement IDs
-        private static readonly int Horizontal = Animator.StringToHash("Horizontal");
-        private static readonly int Vertical = Animator.StringToHash("Vertical");
-        private static readonly int Speed = Animator.StringToHash("Speed");
+        private static readonly int MoveX = Animator.StringToHash("moveX");
+        private static readonly int MoveY = Animator.StringToHash("moveY");
+        private static readonly int Moving = Animator.StringToHash("moving");
 
-        // Variables for movement
-        public float moveSpeed = 5.0f;
-        public Rigidbody2D rb;
-        private Vector2 _lastMovement = Vector2.zero;
-        private Vector2 _movement;
-        public Animator animator;
-        public Transform flashlightTransform;
+        private bool _isMovementLocked;
+        
+        [SerializeField] private float speed = 5f;
+        [SerializeField] private VectorValue startPosition;
+        [SerializeField] private Transform flashlightTransform;
+        [SerializeField] private UIInventory uiInventory;
 
-        // Managers
+        private Rigidbody2D _rb;
+        private Animator _animator;
         private Inventory _inventory;
 
-        [FormerlySerializedAs("ui_inventory")] [SerializeField]
-        private UIInventory uiInventory;
+        private Vector2 _movementInput;
+        private Vector2 _movementDirection;
+        private Quaternion _targetRotation;
 
-        public void Start()
+        public PlayerState currentState; 
+
+        private void Awake()
         {
-            // Ensure hierarchy correctly defines inventory 
+            _rb = GetComponent<Rigidbody2D>();
+            _animator = GetComponent<Animator>();
+        }
+
+        private void Start()
+        {
+            currentState = PlayerState.Alive;
+            InitializeInventory();
+            transform.position = startPosition.initialValue;
+        }
+
+        private void Update()
+        {
+            ProcessInput();
+            UpdateAnimation();
+            RotateFlashlight();
+        }
+
+        private void FixedUpdate()
+        {
+            MoveCharacter();
+        }
+
+        private void LateUpdate()
+        {
+            flashlightTransform.rotation = Quaternion.Slerp(flashlightTransform.rotation, _targetRotation, Time.deltaTime * 10f);
+        }
+
+        private void ProcessInput()
+        {
+            if (_isMovementLocked)
+            {
+                _movementInput = Vector2.zero; // Prevent movement input
+                return;
+            }
+            
+            _movementInput.x = Input.GetAxisRaw("Horizontal");
+            _movementInput.y = Input.GetAxisRaw("Vertical");
+
+            if (_movementInput != Vector2.zero)
+            {
+                _movementDirection = _movementInput.normalized;
+            }
+        }
+
+        private void MoveCharacter()
+        {
+            if (_movementInput != Vector2.zero)
+            {
+                _rb.MovePosition(_rb.position + _movementDirection * (speed * Time.fixedDeltaTime));
+            }
+        }
+        public void LockMovement()
+        {
+            _isMovementLocked = true;
+            _movementInput = Vector2.zero;
+        }
+
+        private void UpdateAnimation()
+        {
+            _animator.SetBool(Moving, _movementInput != Vector2.zero);
+
+            if (_movementInput == Vector2.zero) return;
+            _animator.SetFloat(MoveX, _movementInput.x);
+            _animator.SetFloat(MoveY, _movementInput.y);
+        }
+
+        private void RotateFlashlight()
+        {
+            if (_movementInput == Vector2.zero) return;
+            float angle = Mathf.Atan2(_movementInput.y, _movementInput.x) * Mathf.Rad2Deg;
+            _targetRotation = Quaternion.Euler(0, 0, angle - 90);
+        }
+
+        private void InitializeInventory()
+        {
             if (uiInventory == null)
             {
-                Debug.LogError("PlayerMovement: UIInventory is not assigned in the Inspector!");
+                Debug.LogError("Player: UIInventory is not assigned in the Inspector!");
                 return;
             }
 
-            // Create new inventory and set
             _inventory = new Inventory(UseItem);
             uiInventory.SetPlayer(this);
             uiInventory.SetInventory(_inventory);
         }
 
-        private void Awake()
-        {
-            rb = GetComponent<Rigidbody2D>();
-            animator = GetComponent<Animator>();
-        }
-
-        private void Update()
-        {
-            _movement.x = Input.GetAxisRaw("Horizontal");
-            _movement.y = Input.GetAxisRaw("Vertical");
-
-            // Animate the sprite
-            animator.SetFloat(Horizontal, _movement.x);
-            animator.SetFloat(Vertical, _movement.y);
-            animator.SetFloat(Speed, _movement.sqrMagnitude);
-
-            // Only rotate the flashlight if movement direction changes
-            if (_movement != Vector2.zero && _movement != _lastMovement)
-            {
-                RotateFlashlight();
-                _lastMovement = _movement; // Update previous movement
-            }
-        }
-
-        // Physics (fixed timer) 
-        private void FixedUpdate()
-        {
-            // Constant movement speed
-            rb.MovePosition(rb.position + _movement * (moveSpeed * Time.fixedDeltaTime));
-        }
-
-        // Get player current position 
-        public Vector2 GetPosition()
-        {
-            return transform.position;
-        }
-
-        // Use inventory items
         private void UseItem(Item item)
         {
-            switch (item.itemType)
-            {
-                case Item.ItemType.Health:
-                    Debug.Log("Used health potion.");
-                    _inventory.RemoveItem(new Item { itemType = Item.ItemType.Health, amount = 1 });
-                    break;
-            }
+            if (item.itemType != Item.ItemType.Health) return;
+            Debug.Log("Used health potion.");
+            _inventory.RemoveItem(new Item { itemType = Item.ItemType.Health, amount = 1 });
         }
-        
-        private void RotateFlashlight()
-        {
-            if (_movement != Vector2.zero)
-            {
-                float angle = Mathf.Atan2(_movement.y, _movement.x) * Mathf.Rad2Deg;
-                flashlightTransform.rotation = Quaternion.Euler(0, 0, angle - 90);
-            }
-        }
-        
-        // Collision detection
+
         private void OnTriggerEnter2D(Collider2D collision)
         {
-            CollectableManager collectableManager = collision.GetComponent<CollectableManager>();
-            if (collectableManager != null)
-            {
-                _inventory.AddItem(collectableManager.GetItem());
-                collectableManager.DestroySelf();
-            }
+            if (!collision.TryGetComponent(out CollectableManager collectableManager)) return;
+            _inventory.AddItem(collectableManager.GetItem());
+            collectableManager.DestroySelf();
         }
+        
+        public Vector2 GetPosition() => transform.position;
     }
 }

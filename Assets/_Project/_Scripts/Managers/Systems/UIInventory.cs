@@ -42,10 +42,8 @@ namespace _Project._Scripts.Managers.Systems
             ValidateUIElements();
         }
 
-        public void SetPlayer(Player player)
-        {
-            _player = player;
-        }
+        public void SetPlayer(Player player) => _player = player;
+
         public void SetInventory(Inventory inventory)
         {
             if (inventory == null)
@@ -60,10 +58,7 @@ namespace _Project._Scripts.Managers.Systems
             RefreshInventoryItems();
         }
 
-        private void Inventory_OnItemListChanged(object sender, System.EventArgs e)
-        {
-            RefreshInventoryItems();
-        }
+        private void Inventory_OnItemListChanged(object sender, System.EventArgs e) => RefreshInventoryItems();
 
         private void RefreshInventoryItems()
         {
@@ -72,48 +67,59 @@ namespace _Project._Scripts.Managers.Systems
             // Clear existing slots before adding new ones
             foreach (Transform child in itemSlotContainer)
             {
-                if (child == itemSlotTemplate) continue;
-                Destroy(child.gameObject);
+                if (child != itemSlotTemplate) Destroy(child.gameObject);
             }
 
             var x = 0;
             var y = 0;
-            const float itemSlotCellSize = 50.0f;
-            const int maxColumns = 3; // Adjust as needed for UI layout
+            const float itemSlotCellSize = 40.0f;
+            const int maxColumns = 4; // Adjust as needed for UI layout
+
             foreach (var item in _inventory.GetItemList())
             {
-                var itemSlotRectTransform =
-                    Instantiate(itemSlotTemplate, itemSlotContainer).GetComponent<RectTransform>();
+                var itemSlotRectTransform = Instantiate(itemSlotTemplate, itemSlotContainer).GetComponent<RectTransform>();
                 itemSlotRectTransform.gameObject.SetActive(true);
-                
+
                 // Use item
-                itemSlotRectTransform.GetComponent<Button_UI>().ClickFunc = () =>
-                {
-                    _inventory.UseItem(item);
-                };
+                var buttonUI = itemSlotRectTransform.GetComponent<Button_UI>();
+                buttonUI.ClickFunc = () => _inventory.UseItem(item);
+
                 // Drop item
                 Item duplicateItem = new Item { itemType = item.itemType, amount = item.amount };
-                itemSlotRectTransform.GetComponent<Button_UI>().MouseRightClickFunc = () =>
+                buttonUI.MouseRightClickFunc = () =>
                 {
                     _inventory.RemoveItem(item);
                     CollectableManager.DropItem(_player.GetPosition(), duplicateItem);
-                };                
-                
-                itemSlotRectTransform.anchoredPosition =
-                    new Vector2(x * itemSlotCellSize, -y * itemSlotCellSize); // Negate y for proper UI layout
+                };
+
+                itemSlotRectTransform.anchoredPosition = new Vector2(x * itemSlotCellSize, -y * itemSlotCellSize); // Negate y for proper UI layout
+
+                // Set item image
                 var image = itemSlotRectTransform.Find("Image").GetComponent<Image>();
-                if (image == null)
-                    Debug.LogError("UIInventory: Image component not found on ItemSlotTemplate!");
-                else if (item.GetSprite() == null)
-                    Debug.LogError($"UIInventory: Sprite for item {item} is null!");
+                if (image != null)
+                {
+                    var sprite = item.GetSprite();
+                    if (sprite == null)
+                    {
+                        Debug.LogError($"UIInventory: Sprite for item {item} is null!");
+                    }
+                    else
+                    {
+                        image.sprite = sprite;
+                    }
+                }
                 else
-                    image.sprite = item.GetSprite();
-                
+                {
+                    Debug.LogError("UIInventory: Image component not found on ItemSlotTemplate!");
+                }
+
+                // Set item amount text
                 TextMeshProUGUI uiText = itemSlotRectTransform.Find("Amount").GetComponent<TextMeshProUGUI>();
                 uiText.SetText(item.amount > 1 ? item.amount.ToString() : "");
 
-                x++; // Move to the next column
-                if (x < maxColumns) continue; // Move to the next row when max columns are reached
+                // Update grid layout
+                x++;
+                if (x < maxColumns) continue;
                 x = 0;
                 y++;
             }
@@ -121,23 +127,24 @@ namespace _Project._Scripts.Managers.Systems
 
         private void ValidateUIElements()
         {
-            if (itemSlotContainer == null)
-                Debug.LogError("UIInventory: ItemSlotContainers not found! Check the hierarchy.");
-            if (itemSlotTemplate == null)
-                Debug.LogError("UIInventory: ItemSlotTemplates not found! Check the hierarchy.");
+            if (itemSlotContainer == null) Debug.LogError("UIInventory: ItemSlotContainers not found! Check the hierarchy.");
+            if (itemSlotTemplate == null) Debug.LogError("UIInventory: ItemSlotTemplates not found! Check the hierarchy.");
         }
 
         private bool ValidateInventory()
         {
             if (_inventory == null)
+            {
                 Debug.LogError("UIInventory: _inventory is null! SetInventory() might not have been called.");
-            if (itemSlotContainer == null)
-                Debug.LogError("UIInventory: itemSlotContainer is null. Check UI hierarchy.");
+                return false;
+            }
+
+            if (itemSlotContainer == null) Debug.LogError("UIInventory: itemSlotContainer is null. Check UI hierarchy.");
             if (itemSlotTemplate == null) Debug.LogError("UIInventory: itemSlotTemplate is null. Check UI hierarchy.");
-            if (_inventory == null) return true;
+
             var itemList = _inventory.GetItemList();
-            if (_inventory == null) return true;
             if (itemList == null) Debug.LogError("UIInventory: GetItemList() returned null!");
+
             if (itemList != null) Debug.Log($"UIInventory: Refreshing inventory. Item count: {itemList.Count}");
             return true;
         }

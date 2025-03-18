@@ -1,18 +1,16 @@
 using UnityEngine;
 
 /****************************************************
- *               CAMERA CONTROLLER CLASS            *
+ *               CAMERA CONTROLLER CLASS           *
  ****************************************************
- * Description: This class controls the camera's    *
- * position in the game. It continuously updates the *
- * camera's position to follow the player's current *
- * position on the X and Y axes, while maintaining a *
- * fixed Z-axis value to ensure proper perspective.  *
+ * Description: This class controls the camera's   *
+ * position in the game. It smoothly follows the   *
+ * player's position to ensure fluid movement.     *
  *                                                 *
  * Features:                                       *
- * - Follows the player's position in the game     *
- * - Keeps the camera's Z-position fixed           *
- * - Updates the camera's position every frame     *
+ * - Smoothly follows the player's position        *
+ * - Uses Lerp for gradual movement                *
+ * - Updates position in LateUpdate()              *
  ****************************************************/
 
 namespace _Project._Scripts.Managers.Systems
@@ -20,12 +18,20 @@ namespace _Project._Scripts.Managers.Systems
     public class CameraController : MonoBehaviour
     {
         [SerializeField] private Transform playerTransform;
-        private const float ZPos = -10;
+        private const float ZPos = -10f;
+        private Vector3 _targetPosition;
+        private Vector3 _velocity = Vector3.zero;
+        [SerializeField] private float smoothSpeed = 1f; // Adjust for smoother camera movement
 
-        // Simple top-down camera that follows player's current position 
-        private void Update()
+        private void LateUpdate()
         {
-            transform.position = new Vector3(playerTransform.position.x, playerTransform.position.y, ZPos);
+            if (!playerTransform) return;
+    
+            // Target position follows player instantly but applies small smoothing
+            Vector3 targetPosition = new Vector3(playerTransform.position.x, playerTransform.position.y, ZPos);
+    
+            // Use SmoothDamp for natural but quick motion
+            transform.position = Vector3.SmoothDamp(transform.position, targetPosition, ref _velocity, smoothSpeed);
         }
     }
 }
