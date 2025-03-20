@@ -28,7 +28,11 @@ namespace _Project._Scripts.ScriptableObjects
         
         public void OnAfterDeserialize()
         {
+<<<<<<< Updated upstream
          initialValue = defaultValue;;   
+=======
+         initialValue = defaultValue;   
+>>>>>>> Stashed changes
         }
 
         public void OnBeforeSerialize() {}

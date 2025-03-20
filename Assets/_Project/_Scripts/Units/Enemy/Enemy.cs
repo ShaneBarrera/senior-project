@@ -22,7 +22,12 @@ namespace _Project._Scripts.Units.Enemy
 
         private Rigidbody2D _rb;
         private Animator _animator;
+<<<<<<< Updated upstream
         private float _chaseRadiusSquared; 
+=======
+        private float _chaseRadiusSquared;
+        private bool _isMovementLocked; // Added flag to lock movement
+>>>>>>> Stashed changes
 
         private void Awake()
         {
@@ -39,7 +44,11 @@ namespace _Project._Scripts.Units.Enemy
 
         private void FixedUpdate()
         {
+<<<<<<< Updated upstream
             if (target)
+=======
+            if (!_isMovementLocked && target)
+>>>>>>> Stashed changes
             {
                 CheckDistance();
             }
@@ -48,7 +57,12 @@ namespace _Project._Scripts.Units.Enemy
 
         private void CheckDistance()
         {
+<<<<<<< Updated upstream
             // Only calculate distance squared to avoid the expensive square root operation
+=======
+            if (_isMovementLocked) return; // Prevent enemy from moving when locked
+
+>>>>>>> Stashed changes
             float distanceSquared = (target.position - transform.position).sqrMagnitude;
 
             if (distanceSquared <= _chaseRadiusSquared)
@@ -68,6 +82,10 @@ namespace _Project._Scripts.Units.Enemy
 
         private void MoveTowardsTarget(Vector2 direction)
         {
+<<<<<<< Updated upstream
+=======
+            if (_isMovementLocked) return; // Prevent movement if locked
+>>>>>>> Stashed changes
             Vector2 newPosition = _rb.position + direction * (moveSpeed * Time.fixedDeltaTime);
             _rb.MovePosition(newPosition);
         }
@@ -80,7 +98,10 @@ namespace _Project._Scripts.Units.Enemy
 
         private void UpdateAnimation(Vector2 direction)
         {
+<<<<<<< Updated upstream
             // Optimized direction determination (no need to check absolute values multiple times)
+=======
+>>>>>>> Stashed changes
             if (Mathf.Abs(direction.x) > Mathf.Abs(direction.y))
             {
                 SetAnimationFloat(direction.x > 0 ? Vector2.right : Vector2.left);
@@ -98,5 +119,15 @@ namespace _Project._Scripts.Units.Enemy
                 currentState = newState;
             }
         }
+<<<<<<< Updated upstream
+=======
+        public void LockMovement()
+        {
+            _isMovementLocked = true;
+            _rb.linearVelocity = Vector2.zero; // Stop any current movement
+            _animator.SetBool(Walking, false); // Stop walk animation
+            ChangeState(EnemyState.Idle);
+        }
+>>>>>>> Stashed changes
     }
 }

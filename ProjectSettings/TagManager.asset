@@ -64,6 +64,12 @@ TagManager:
   - name: AbovePlayer
     uniqueID: 3767824133
     locked: 0
+<<<<<<< Updated upstream
+=======
+  - name: Doors
+    uniqueID: 104920245
+    locked: 0
+>>>>>>> Stashed changes
   - name: Fog
     uniqueID: 241102317
     locked: 0

@@ -3,6 +3,7 @@ using _Project._Scripts.ScriptableObjects;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
+<<<<<<< Updated upstream
 /****************************************************
  *               SCENE TRANSITION SYSTEM             *
  ****************************************************
@@ -22,6 +23,8 @@ using UnityEngine.SceneManagement;
  *   transitions between scenes                    *
  ****************************************************/
 
+=======
+>>>>>>> Stashed changes
 namespace _Project._Scripts.Managers.Systems
 {
     public class SceneTransition : MonoBehaviour
@@ -33,6 +36,11 @@ namespace _Project._Scripts.Managers.Systems
         public GameObject fadeOutPanel;
         public float loadingTime;
 
+<<<<<<< Updated upstream
+=======
+        private bool _playerInRange;
+
+>>>>>>> Stashed changes
         public void Awake()
         {
             // Instantiate fadeInPanel only if it's not null and clean up after 1 second
@@ -42,12 +50,40 @@ namespace _Project._Scripts.Managers.Systems
             }
         }
 
+<<<<<<< Updated upstream
         public void OnTriggerEnter2D(Collider2D other)
         {
             // Trigger scene transition only if the object is the player, and it's not a trigger
             if (!other.CompareTag("Player") || other.isTrigger) return;
             playerStorage.initialValue = playerPosition;
             StartCoroutine(FadeCoroutine());
+=======
+        private void Update()
+        {
+            // Check if player is in range and presses 'E' to trigger transition
+            if (_playerInRange && Input.GetKeyDown(KeyCode.E))
+            {
+                playerStorage.initialValue = playerPosition;
+                StartCoroutine(FadeCoroutine());
+            }
+        }
+
+        private void OnTriggerEnter2D(Collider2D other)
+        {
+            // Only mark player as in range, don't transition immediately
+            if (other.CompareTag("Player") && !other.isTrigger)
+            {
+                _playerInRange = true;
+            }
+        }
+
+        private void OnTriggerExit2D(Collider2D other)
+        {
+            if (other.CompareTag("Player"))
+            {
+                _playerInRange = false;
+            }
+>>>>>>> Stashed changes
         }
 
         private IEnumerator FadeCoroutine()
@@ -68,4 +104,8 @@ namespace _Project._Scripts.Managers.Systems
             }
         }
     }
+<<<<<<< Updated upstream
 }
+=======
+}
+>>>>>>> Stashed changes
