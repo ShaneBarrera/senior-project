@@ -3,28 +3,6 @@ using _Project._Scripts.ScriptableObjects;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-<<<<<<< Updated upstream
-/****************************************************
- *               SCENE TRANSITION SYSTEM             *
- ****************************************************
- * Description: This system handles the transition *
- * between scenes in the game. It triggers a scene *
- * change when the player enters a designated area, *
- * applies fade-in and fade-out effects, and waits *
- * for the scene to load asynchronously.            *
- *                                                  *
- * Features:                                        *
- * - Instantiates fade-in and fade-out panels      *
- * - Triggers scene transition when the player     *
- *   enters a specific area                        *
- * - Asynchronously loads the next scene after a   *
- *   delay                                           *
- * - Stores the player's position for smooth       *
- *   transitions between scenes                    *
- ****************************************************/
-
-=======
->>>>>>> Stashed changes
 namespace _Project._Scripts.Managers.Systems
 {
     public class SceneTransition : MonoBehaviour
@@ -36,11 +14,8 @@ namespace _Project._Scripts.Managers.Systems
         public GameObject fadeOutPanel;
         public float loadingTime;
 
-<<<<<<< Updated upstream
-=======
         private bool _playerInRange;
 
->>>>>>> Stashed changes
         public void Awake()
         {
             // Instantiate fadeInPanel only if it's not null and clean up after 1 second
@@ -50,14 +25,6 @@ namespace _Project._Scripts.Managers.Systems
             }
         }
 
-<<<<<<< Updated upstream
-        public void OnTriggerEnter2D(Collider2D other)
-        {
-            // Trigger scene transition only if the object is the player, and it's not a trigger
-            if (!other.CompareTag("Player") || other.isTrigger) return;
-            playerStorage.initialValue = playerPosition;
-            StartCoroutine(FadeCoroutine());
-=======
         private void Update()
         {
             // Check if player is in range and presses 'E' to trigger transition
@@ -83,7 +50,6 @@ namespace _Project._Scripts.Managers.Systems
             {
                 _playerInRange = false;
             }
->>>>>>> Stashed changes
         }
 
         private IEnumerator FadeCoroutine()
@@ -104,8 +70,4 @@ namespace _Project._Scripts.Managers.Systems
             }
         }
     }
-<<<<<<< Updated upstream
 }
-=======
-}
->>>>>>> Stashed changes

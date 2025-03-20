@@ -23,12 +23,8 @@ namespace _Project._Scripts.Units.Player
     public enum PlayerState
     {
         Alive,
-<<<<<<< Updated upstream
-        Death
-=======
         Death,
         Interact
->>>>>>> Stashed changes
     }
     public class Player : MonoBehaviour
     {
@@ -51,13 +47,9 @@ namespace _Project._Scripts.Units.Player
         private Vector2 _movementDirection;
         private Quaternion _targetRotation;
 
-<<<<<<< Updated upstream
-        public PlayerState currentState; 
-=======
         public PlayerState currentState;
         public Backpack backpack;
         public SpriteRenderer receivedThingSprite;
->>>>>>> Stashed changes
 
         private void Awake()
         {
@@ -74,13 +66,10 @@ namespace _Project._Scripts.Units.Player
 
         private void Update()
         {
-<<<<<<< Updated upstream
-=======
             if (currentState == PlayerState.Interact)
             {
                 return;
             }
->>>>>>> Stashed changes
             ProcessInput();
             UpdateAnimation();
             RotateFlashlight();
@@ -142,8 +131,6 @@ namespace _Project._Scripts.Units.Player
             _targetRotation = Quaternion.Euler(0, 0, angle - 90);
         }
 
-<<<<<<< Updated upstream
-=======
         public void CollectThing()
         {
             if (backpack.currentThing == null) return;
@@ -153,7 +140,6 @@ namespace _Project._Scripts.Units.Player
             currentState = PlayerState.Alive;
         }
         
->>>>>>> Stashed changes
         private void InitializeInventory()
         {
             if (uiInventory == null)
@@ -180,8 +166,6 @@ namespace _Project._Scripts.Units.Player
             _inventory.AddItem(collectableManager.GetItem());
             collectableManager.DestroySelf();
         }
-<<<<<<< Updated upstream
-=======
 
         private void OnTriggerExit2D(Collider2D collision)
         {
@@ -189,7 +173,6 @@ namespace _Project._Scripts.Units.Player
             currentState = PlayerState.Alive;
             receivedThingSprite.sprite = null;
         }
->>>>>>> Stashed changes
         
         public Vector2 GetPosition() => transform.position;
     }
