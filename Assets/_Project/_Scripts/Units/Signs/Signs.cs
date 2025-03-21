@@ -22,11 +22,11 @@ namespace _Project._Scripts.Units.Signs
 {
     public class Signs : MonoBehaviour
     {
+        // ProText GUI
         [SerializeField] private GameObject textBox;
         [SerializeField] private TextMeshProUGUI dialogueText;
         [SerializeField] private string dialogue;
-       
-
+        
         public SignalSender context;
         private void Start() 
         {

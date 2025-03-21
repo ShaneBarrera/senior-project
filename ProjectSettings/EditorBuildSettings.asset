@@ -11,6 +11,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/_Project/Scenes/Mansion/MansionCorridor.unity
     guid: 407711dc57f97e64c98728969f778d6b
+  - enabled: 1
+    path: Assets/_Project/Scenes/Mansion/MansionCorridor1.unity
+    guid: a58f474689e2f0e4f88a109347b4284f
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   m_UseUCBPForAssetBundles: 0

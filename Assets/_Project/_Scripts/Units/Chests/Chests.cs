@@ -5,19 +5,41 @@ using UnityEngine;
 
 namespace _Project._Scripts.Units.Chests
 {
+    /****************************************************
+     *                  CHEST CLASS                    *
+     ****************************************************
+     * Description: This class handles the interaction *
+     * with chests in the game. When the player is in  *
+     * range and presses 'E', the chest opens, grants  *
+     * an item, and sends a signal to notify other     *
+     * systems. The chest cannot be reopened once it   *
+     * has been interacted with.                       *
+     *                                                 *
+     * Features:                                       *
+     * - Opens when the player presses 'E'             *
+     * - Grants an item to the player's backpack       *
+     * - Prevents multiple interactions after opening  *
+     * - Sends signals upon interaction                *
+     * - Displays item information via UI text         *
+     ****************************************************/
+
     public class Chests : Interactable
     {
-        [SerializeField] private GameObject textBox;
-        [SerializeField] private TextMeshProUGUI dialogueText;
-        
-        private bool _hasInteracted; 
-        
-        private static readonly int OpenChest = Animator.StringToHash("Open");
-        private Animator _animator;
-
+        // External class references
         public Thing contents;
         public Backpack backpack;
         public SignalSender collectThing;
+        
+        // ProText GUI
+        [SerializeField] private GameObject textBox;
+        [SerializeField] private TextMeshProUGUI dialogueText;
+        
+        // Animation
+        private static readonly int OpenChest = Animator.StringToHash("Open");
+        private Animator _animator;
+        
+        private bool _hasInteracted; 
+        
         private void Awake()
         {
             _animator = GetComponent<Animator>();

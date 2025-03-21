@@ -10,20 +10,23 @@ namespace _Project._Scripts.Units.Enemy
 
     public class Enemy : MonoBehaviour
     {
+        // Animation references
         private static readonly int Walking = Animator.StringToHash("walking");
         private static readonly int MoveX = Animator.StringToHash("moveX");
         private static readonly int MoveY = Animator.StringToHash("moveY");
 
-        public EnemyState currentState;
-        public float moveSpeed;
-        public float chaseRadius;
-        public Transform target;
-        public Transform homePosition;
-
+        // Components
         private Rigidbody2D _rb;
         private Animator _animator;
+        
+        // Enemy attributes
+        public EnemyState currentState;
+        public Transform target;
+        //public Transform homePosition;
+        public float moveSpeed;
+        public float chaseRadius;
         private float _chaseRadiusSquared;
-        private bool _isMovementLocked; // Added flag to lock movement
+        private bool _isMovementLocked; 
 
         private void Awake()
         {
@@ -44,7 +47,7 @@ namespace _Project._Scripts.Units.Enemy
             {
                 CheckDistance();
             }
-            Debug.Log($"Enemy State: {currentState} | Position: {transform.position}");
+            //Debug.Log($"Enemy State: {currentState} | Position: {transform.position}");
         }
 
         private void CheckDistance()
@@ -70,7 +73,7 @@ namespace _Project._Scripts.Units.Enemy
 
         private void MoveTowardsTarget(Vector2 direction)
         {
-            if (_isMovementLocked) return; // Prevent movement if locked
+            if (_isMovementLocked) return; 
             Vector2 newPosition = _rb.position + direction * (moveSpeed * Time.fixedDeltaTime);
             _rb.MovePosition(newPosition);
         }
@@ -103,8 +106,8 @@ namespace _Project._Scripts.Units.Enemy
         public void LockMovement()
         {
             _isMovementLocked = true;
-            _rb.linearVelocity = Vector2.zero; // Stop any current movement
-            _animator.SetBool(Walking, false); // Stop walk animation
+            _rb.linearVelocity = Vector2.zero; 
+            _animator.SetBool(Walking, false); 
             ChangeState(EnemyState.Idle);
         }
     }

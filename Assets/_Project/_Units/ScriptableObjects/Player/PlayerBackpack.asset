@@ -15,4 +15,7 @@ MonoBehaviour:
   currentThing: {fileID: 0}
   things:
   - {fileID: 11400000, guid: e702549283759a442bb5f67b4d2e0fd8, type: 2}
-  numberOfKeys: 1
+  hasStandardKey: 0
+  hasSilverKey: 0
+  hasBronzeKey: 0
+  hasBloodyKey: 0

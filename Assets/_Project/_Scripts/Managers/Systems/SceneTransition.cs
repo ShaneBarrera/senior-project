@@ -1,5 +1,6 @@
 using System.Collections;
 using _Project._Scripts.ScriptableObjects;
+using _Project._Scripts.Units.Doors;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -7,15 +8,19 @@ namespace _Project._Scripts.Managers.Systems
 {
     public class SceneTransition : MonoBehaviour
     {
+        // Scenes and loading times
         public string sceneToLoad;
+        public float loadingTime;
+        
+        // Player attributes
         public Vector2 playerPosition;
         public VectorValue playerStorage;
+        private bool _playerInRange;
+        
+        // Transition animations
         public GameObject fadeInPanel;
         public GameObject fadeOutPanel;
-        public float loadingTime;
-
-        private bool _playerInRange;
-
+        
         public void Awake()
         {
             // Instantiate fadeInPanel only if it's not null and clean up after 1 second
@@ -28,11 +33,9 @@ namespace _Project._Scripts.Managers.Systems
         private void Update()
         {
             // Check if player is in range and presses 'E' to trigger transition
-            if (_playerInRange && Input.GetKeyDown(KeyCode.E))
-            {
-                playerStorage.initialValue = playerPosition;
-                StartCoroutine(FadeCoroutine());
-            }
+            if (!_playerInRange || !Input.GetKeyDown(KeyCode.E)) return;
+            playerStorage.initialValue = playerPosition;
+            StartCoroutine(FadeCoroutine());
         }
 
         private void OnTriggerEnter2D(Collider2D other)
