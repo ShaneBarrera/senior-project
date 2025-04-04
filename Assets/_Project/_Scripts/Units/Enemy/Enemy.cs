@@ -10,19 +10,23 @@ namespace _Project._Scripts.Units.Enemy
 
     public class Enemy : MonoBehaviour
     {
+        // Animation references
         private static readonly int Walking = Animator.StringToHash("walking");
         private static readonly int MoveX = Animator.StringToHash("moveX");
         private static readonly int MoveY = Animator.StringToHash("moveY");
 
-        public EnemyState currentState;
-        public float moveSpeed;
-        public float chaseRadius;
-        public Transform target;
-        public Transform homePosition;
-
+        // Components
         private Rigidbody2D _rb;
         private Animator _animator;
-        private float _chaseRadiusSquared; 
+        
+        // Enemy attributes
+        public EnemyState currentState;
+        public Transform target;
+        //public Transform homePosition;
+        public float moveSpeed;
+        public float chaseRadius;
+        private float _chaseRadiusSquared;
+        private bool _isMovementLocked; 
 
         private void Awake()
         {
@@ -39,16 +43,17 @@ namespace _Project._Scripts.Units.Enemy
 
         private void FixedUpdate()
         {
-            if (target)
+            if (!_isMovementLocked && target)
             {
                 CheckDistance();
             }
-            Debug.Log($"Enemy State: {currentState} | Position: {transform.position}");
+            //Debug.Log($"Enemy State: {currentState} | Position: {transform.position}");
         }
 
         private void CheckDistance()
         {
-            // Only calculate distance squared to avoid the expensive square root operation
+            if (_isMovementLocked) return; // Prevent enemy from moving when locked
+
             float distanceSquared = (target.position - transform.position).sqrMagnitude;
 
             if (distanceSquared <= _chaseRadiusSquared)
@@ -68,6 +73,7 @@ namespace _Project._Scripts.Units.Enemy
 
         private void MoveTowardsTarget(Vector2 direction)
         {
+            if (_isMovementLocked) return; 
             Vector2 newPosition = _rb.position + direction * (moveSpeed * Time.fixedDeltaTime);
             _rb.MovePosition(newPosition);
         }
@@ -80,7 +86,6 @@ namespace _Project._Scripts.Units.Enemy
 
         private void UpdateAnimation(Vector2 direction)
         {
-            // Optimized direction determination (no need to check absolute values multiple times)
             if (Mathf.Abs(direction.x) > Mathf.Abs(direction.y))
             {
                 SetAnimationFloat(direction.x > 0 ? Vector2.right : Vector2.left);
@@ -97,6 +102,13 @@ namespace _Project._Scripts.Units.Enemy
             {
                 currentState = newState;
             }
+        }
+        public void LockMovement()
+        {
+            _isMovementLocked = true;
+            _rb.linearVelocity = Vector2.zero; 
+            _animator.SetBool(Walking, false); 
+            ChangeState(EnemyState.Idle);
         }
     }
 }

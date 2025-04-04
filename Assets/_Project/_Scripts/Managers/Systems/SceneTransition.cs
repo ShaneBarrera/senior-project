@@ -1,38 +1,26 @@
 using System.Collections;
 using _Project._Scripts.ScriptableObjects;
+using _Project._Scripts.Units.Doors;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-
-/****************************************************
- *               SCENE TRANSITION SYSTEM             *
- ****************************************************
- * Description: This system handles the transition *
- * between scenes in the game. It triggers a scene *
- * change when the player enters a designated area, *
- * applies fade-in and fade-out effects, and waits *
- * for the scene to load asynchronously.            *
- *                                                  *
- * Features:                                        *
- * - Instantiates fade-in and fade-out panels      *
- * - Triggers scene transition when the player     *
- *   enters a specific area                        *
- * - Asynchronously loads the next scene after a   *
- *   delay                                           *
- * - Stores the player's position for smooth       *
- *   transitions between scenes                    *
- ****************************************************/
 
 namespace _Project._Scripts.Managers.Systems
 {
     public class SceneTransition : MonoBehaviour
     {
+        // Scenes and loading times
         public string sceneToLoad;
+        public float loadingTime;
+        
+        // Player attributes
         public Vector2 playerPosition;
         public VectorValue playerStorage;
+        private bool _playerInRange;
+        
+        // Transition animations
         public GameObject fadeInPanel;
         public GameObject fadeOutPanel;
-        public float loadingTime;
-
+        
         public void Awake()
         {
             // Instantiate fadeInPanel only if it's not null and clean up after 1 second
@@ -42,12 +30,29 @@ namespace _Project._Scripts.Managers.Systems
             }
         }
 
-        public void OnTriggerEnter2D(Collider2D other)
+        private void Update()
         {
-            // Trigger scene transition only if the object is the player, and it's not a trigger
-            if (!other.CompareTag("Player") || other.isTrigger) return;
+            // Check if player is in range and presses 'E' to trigger transition
+            if (!_playerInRange || !Input.GetKeyDown(KeyCode.E)) return;
             playerStorage.initialValue = playerPosition;
             StartCoroutine(FadeCoroutine());
+        }
+
+        private void OnTriggerEnter2D(Collider2D other)
+        {
+            // Only mark player as in range, don't transition immediately
+            if (other.CompareTag("Player") && !other.isTrigger)
+            {
+                _playerInRange = true;
+            }
+        }
+
+        private void OnTriggerExit2D(Collider2D other)
+        {
+            if (other.CompareTag("Player"))
+            {
+                _playerInRange = false;
+            }
         }
 
         private IEnumerator FadeCoroutine()

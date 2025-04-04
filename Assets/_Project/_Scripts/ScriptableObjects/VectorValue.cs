@@ -28,7 +28,7 @@ namespace _Project._Scripts.ScriptableObjects
         
         public void OnAfterDeserialize()
         {
-         initialValue = defaultValue;;   
+         initialValue = defaultValue;   
         }
 
         public void OnBeforeSerialize() {}

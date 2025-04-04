@@ -17,10 +17,13 @@ namespace _Project._Scripts.Managers.Systems
 {
     public class CameraController : MonoBehaviour
     {
+        // Transforms and vectors
         [SerializeField] private Transform playerTransform;
-        private const float ZPos = -10f;
         private Vector3 _targetPosition;
         private Vector3 _velocity = Vector3.zero;
+        
+        // Position and speed
+        private const float ZPos = -10f;
         [SerializeField] private float smoothSpeed = 1f; // Adjust for smoother camera movement
 
         private void LateUpdate()

@@ -23,31 +23,36 @@ namespace _Project._Scripts.Units.Player
     public enum PlayerState
     {
         Alive,
-        Death
+        Death,
+        Interact
     }
     public class Player : MonoBehaviour
     {
+        // Animation references
         private static readonly int MoveX = Animator.StringToHash("moveX");
         private static readonly int MoveY = Animator.StringToHash("moveY");
         private static readonly int Moving = Animator.StringToHash("moving");
-
-        private bool _isMovementLocked;
         
-        [SerializeField] private float speed = 5f;
-        [SerializeField] private VectorValue startPosition;
-        [SerializeField] private Transform flashlightTransform;
-        [SerializeField] private UIInventory uiInventory;
-
+        // Components
         private Rigidbody2D _rb;
         private Animator _animator;
-        private Inventory _inventory;
+        public SpriteRenderer receivedThingSprite;
 
+        // Player attributes
+        [SerializeField] private VectorValue startPosition;
+        [SerializeField] private Transform flashlightTransform;
         private Vector2 _movementInput;
         private Vector2 _movementDirection;
         private Quaternion _targetRotation;
+        [SerializeField] private float speed = 5f;
+        private bool _isMovementLocked;
 
-        public PlayerState currentState; 
-
+        // External class references
+        [SerializeField] private UIInventory uiInventory;
+        public PlayerState currentState;
+        public Backpack backpack;
+        private Inventory _inventory;
+        
         private void Awake()
         {
             _rb = GetComponent<Rigidbody2D>();
@@ -63,6 +68,10 @@ namespace _Project._Scripts.Units.Player
 
         private void Update()
         {
+            if (currentState == PlayerState.Interact)
+            {
+                return;
+            }
             ProcessInput();
             UpdateAnimation();
             RotateFlashlight();
@@ -124,6 +133,15 @@ namespace _Project._Scripts.Units.Player
             _targetRotation = Quaternion.Euler(0, 0, angle - 90);
         }
 
+        public void CollectThing()
+        {
+            if (backpack.currentThing == null) return;
+            if (currentState == PlayerState.Interact) return;
+            currentState = PlayerState.Interact;
+            receivedThingSprite.sprite = backpack.currentThing.itemSprite;
+            currentState = PlayerState.Alive;
+        }
+        
         private void InitializeInventory()
         {
             if (uiInventory == null)
@@ -149,6 +167,13 @@ namespace _Project._Scripts.Units.Player
             if (!collision.TryGetComponent(out CollectableManager collectableManager)) return;
             _inventory.AddItem(collectableManager.GetItem());
             collectableManager.DestroySelf();
+        }
+
+        private void OnTriggerExit2D(Collider2D collision)
+        {
+            if (currentState == PlayerState.Interact) return;
+            currentState = PlayerState.Alive;
+            receivedThingSprite.sprite = null;
         }
         
         public Vector2 GetPosition() => transform.position;
