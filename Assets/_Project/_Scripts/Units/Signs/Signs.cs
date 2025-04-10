@@ -36,16 +36,25 @@ namespace _Project._Scripts.Units.Signs
         private void OnTriggerEnter2D(Collider2D other)
         {
             if (!other.CompareTag("Player") || other.isTrigger) return;
-            context.Raise();
-            textBox.SetActive(true);
-            dialogueText.text = dialogue;
+
+            context?.Raise();
+
+            if (textBox != null)
+                textBox.SetActive(true);
+
+            if (dialogueText != null)
+                dialogueText.text = dialogue;
         }
 
         private void OnTriggerExit2D(Collider2D other)
         {
             if (!other.CompareTag("Player") || other.isTrigger) return;
-            context.Raise();
-            textBox.SetActive(false);
+
+            context?.Raise();
+
+            if (textBox != null)
+                textBox.SetActive(false);
         }
+
     }
 }

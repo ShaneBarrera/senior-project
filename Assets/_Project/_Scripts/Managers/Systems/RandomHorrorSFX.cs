@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
+// Note: no SO are used, just the audio files
 namespace _Project._Scripts.Managers.Systems
 {
     public class RandomHorrorSFX : MonoBehaviour

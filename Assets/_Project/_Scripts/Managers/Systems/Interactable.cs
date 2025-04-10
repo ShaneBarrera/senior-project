@@ -17,8 +17,11 @@ using UnityEngine;
 
 namespace _Project._Scripts.Managers.Systems
 {
-    public class Interactable : MonoBehaviour {
-
+    public class Interactable : MonoBehaviour
+    {
+        /******************************************
+         *        VARIABLES AND CONTEXT          *
+         ******************************************/
         public SignalSender context;
         public bool playerInRange;
         

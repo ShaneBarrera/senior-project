@@ -1,35 +1,46 @@
 using System.Collections;
 using _Project._Scripts.ScriptableObjects;
-using _Project._Scripts.Units.Doors;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+
+/*****************************************************
+ *              SCENE TRANSITION MANAGER            *
+ *****************************************************
+ * Handles scene transitions with fade effects and  *
+ * ensures player position is stored correctly.      *
+ *****************************************************/
 
 namespace _Project._Scripts.Managers.Systems
 {
     public class SceneTransition : MonoBehaviour
     {
-        // Scenes and loading times
+        /******************************************
+         *              SCENE AND LOADING         *
+         ******************************************/
         public string sceneToLoad;
         public float loadingTime;
-        
-        // Player attributes
+        private bool _isTransitioning;
+
+        /******************************************
+         *              PLAYER ATTRIBUTES         *
+         ******************************************/
         public Vector2 playerPosition;
         public VectorValue playerStorage;
         private bool _playerInRange;
-        
-        // Transition animations
+
+        /******************************************
+         *             TRANSITION ANIMATIONS      *
+         ******************************************/
         public GameObject fadeInPanel;
         public GameObject fadeOutPanel;
         
         public void Awake()
         {
-            // Instantiate fadeInPanel only if it's not null and clean up after 1 second
-            if (fadeInPanel != null)
-            {
-                Destroy(Instantiate(fadeInPanel, Vector3.zero, Quaternion.identity), 1);
-            }
+            if (!fadeInPanel) return;
+            var fadeInstance = Instantiate(fadeInPanel, Vector3.zero, Quaternion.identity);
+            Destroy(fadeInstance, 1); // Destroys only the new instance, not the prefab reference
         }
-
+        
         private void Update()
         {
             // Check if player is in range and presses 'E' to trigger transition
@@ -37,7 +48,14 @@ namespace _Project._Scripts.Managers.Systems
             playerStorage.initialValue = playerPosition;
             StartCoroutine(FadeCoroutine());
         }
-
+        
+        public void ForceTransition()
+        {
+            if (_isTransitioning) return;
+            playerStorage.initialValue = playerPosition;
+            StartCoroutine(FadeCoroutine());
+        }
+        
         private void OnTriggerEnter2D(Collider2D other)
         {
             // Only mark player as in range, don't transition immediately
@@ -54,10 +72,11 @@ namespace _Project._Scripts.Managers.Systems
                 _playerInRange = false;
             }
         }
-
+        
         private IEnumerator FadeCoroutine()
         {
-            // Instantiate fadeOutPanel and wait before loading the scene
+            _isTransitioning = true;
+
             if (fadeOutPanel)
             {
                 Instantiate(fadeOutPanel, Vector3.zero, Quaternion.identity);
@@ -65,7 +84,6 @@ namespace _Project._Scripts.Managers.Systems
 
             yield return new WaitForSeconds(loadingTime);
 
-            // Load the scene asynchronously and wait for completion
             var async = SceneManager.LoadSceneAsync(sceneToLoad);
             while (async is { isDone: false })
             {

@@ -12,4 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4f13d3881cb70bb48bd56564df78dc80, type: 3}
   m_Name: PlayerFlashlightRotation
   m_EditorClassIdentifier: 
-  initialValue: {x: 0, y: 0, z: 0, w: 0}
+  initialValue: {x: -0, y: -0, z: 0.000000031958805, w: 1}
+  defaultValue: {x: 0, y: 0, z: 0, w: 0}

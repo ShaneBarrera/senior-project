@@ -17,23 +17,24 @@ namespace _Project._Scripts.Managers.Systems
 {
     public class CameraController : MonoBehaviour
     {
-        // Transforms and vectors
+        /******************************************
+         *        CAMERA TARGET & SETTINGS        *
+         ******************************************/
         [SerializeField] private Transform playerTransform;
         private Vector3 _targetPosition;
         private Vector3 _velocity = Vector3.zero;
-        
-        // Position and speed
-        private const float ZPos = -10f;
-        [SerializeField] private float smoothSpeed = 1f; // Adjust for smoother camera movement
 
+        [Header("Camera Settings")]
+        private const float ZPos = -10f;
+        [SerializeField] private float smoothSpeed = 1f;
+        
         private void LateUpdate()
         {
             if (!playerTransform) return;
-    
-            // Target position follows player instantly but applies small smoothing
+
             Vector3 targetPosition = new Vector3(playerTransform.position.x, playerTransform.position.y, ZPos);
-    
-            // Use SmoothDamp for natural but quick motion
+
+            // Smoothly interpolate camera position
             transform.position = Vector3.SmoothDamp(transform.position, targetPosition, ref _velocity, smoothSpeed);
         }
     }

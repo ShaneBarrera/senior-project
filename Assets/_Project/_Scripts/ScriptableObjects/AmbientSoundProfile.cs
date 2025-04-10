@@ -17,6 +17,9 @@ using UnityEngine;
  *   which the sound is audible                    *
  ****************************************************/
 
+// This uses SO for sounds; invoke in the relevant class itself 
+// (i.e. chestOpen would occur in Chest.cs itself)
+
 namespace _Project._Scripts.ScriptableObjects
 {
     [CreateAssetMenu(fileName = "NewAmbientSoundProfile", menuName = "Audio/Ambient Sound Profile")]

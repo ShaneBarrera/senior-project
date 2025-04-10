@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   interactionSounds:
   - {fileID: 8300000, guid: 23b3e6e0dd0da9e48a3aab628790cea7, type: 3}
-  volume: 0.75
+  volume: 1
   pitch: 1
   minDistance: 1
   maxDistance: 25

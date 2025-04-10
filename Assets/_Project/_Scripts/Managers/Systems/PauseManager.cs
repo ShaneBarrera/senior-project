@@ -2,6 +2,8 @@ using System;
 using _Project._Scripts.Units.Player;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.EventSystems;
+
 
 /****************************************************
  *                  PAUSE MANAGER                  *
@@ -67,21 +69,36 @@ namespace _Project._Scripts.Managers.Systems
         public void ChangePause()
         {
             _isPaused = !_isPaused;
+
+            foreach (var ambient in AmbientSound3D.ActiveInstances)
+            {
+                if (ambient is null) continue;
+                ambient.FadeToVolume(_isPaused ? 0f : 1f, 0.75f);
+            }
+
             if (_isPaused)
             {
                 pausePanel.SetActive(true);
                 Cursor.visible = true;
                 Time.timeScale = 0f;
+
+                // Ensure no button remains "selected" so hover works again
+                EventSystem.current.SetSelectedGameObject(null);
+
                 if (_playerMovement)
-                    _playerMovement.enabled = false; // Disable movement
+                    _playerMovement.enabled = false;
             }
             else
             {
                 pausePanel.SetActive(false);
                 Cursor.visible = false;
                 Time.timeScale = 1f;
+
+                // Clear selected UI to prevent ghost highlighting
+                EventSystem.current.SetSelectedGameObject(null);
+
                 if (_playerMovement)
-                    _playerMovement.enabled = true; // Re-enable movement
+                    _playerMovement.enabled = true;
             }
         }
 
