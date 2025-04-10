@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: lowBreathing
   m_EditorClassIdentifier: 
   clips:
-  - {fileID: 8300000, guid: 16f1fe65c15836848b5d75c8eb62c730, type: 3}
-  volume: 5
-  pitch: 2
+  - {fileID: 8300000, guid: 504def74a0a085747b0f895c73ec6e57, type: 3}
+  volume: 1
+  pitch: 1
   minDistance: 1
   maxDistance: 25

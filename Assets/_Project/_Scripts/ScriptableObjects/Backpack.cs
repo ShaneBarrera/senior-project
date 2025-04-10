@@ -1,5 +1,6 @@
-using System.Collections.Generic;
+using System.Collections.Generic; 
 using UnityEngine;
+using _Project._Scripts.Managers.Systems;
 
 /****************************************************
  *                  BACKPACK CLASS                 *
@@ -14,24 +15,31 @@ using UnityEngine;
  * - Tracks the number of keys separately          *
  * - Prevents duplicate non-key items in inventory *
  * - Allows adding new items dynamically           *
+ * - Resets state on player death via IResettable  *
  ****************************************************/
-
 
 namespace _Project._Scripts.ScriptableObjects
 {
     [CreateAssetMenu(fileName = "Backpack", menuName = "ScriptableObjects/Backpack", order = 1)]
-    public class Backpack : ScriptableObject
+    public class Backpack : ScriptableObject, IResettable
     {
-        // Items collectable in backpack
+        /******************************************
+         *             COLLECTED ITEMS            *
+         ******************************************/
         public Thing currentThing;
         public List<Thing> things = new List<Thing>();
-        
-        // Validate presence of current item
+
+        /******************************************
+         *               KEY TRACKING             *
+         ******************************************/
         public bool hasStandardKey;
         public bool hasSilverKey;
         public bool hasBronzeKey;
         public bool hasBloodyKey;
 
+        /******************************************
+         *            ADD ITEM TO BACKPACK        *
+         ******************************************/
         public void AddThing(Thing thing)
         {
             // Key cases
@@ -59,6 +67,20 @@ namespace _Project._Scripts.ScriptableObjects
                     things.Add(thing);
                 }
             }
+        }
+
+        /******************************************
+         *             RESET TO DEFAULT           *
+         ******************************************/
+        public void ResetToDefault()
+        {
+            currentThing = null;
+            things.Clear();
+
+            hasStandardKey = false;
+            hasSilverKey = false;
+            hasBronzeKey = false;
+            hasBloodyKey = false;
         }
     }
 }

@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: StandardKey
   m_EditorClassIdentifier: 
   itemSprite: {fileID: 1095141833252711340, guid: 4e8724f3dd745054cb83758e79ceaa99, type: 3}
-  itemName: You received a Standard Key
+  itemName: You received a Standard Key.
   isStandardKey: 1
   isSilverKey: 0
   isBronzeKey: 0

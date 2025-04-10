@@ -21,13 +21,20 @@ namespace _Project._Scripts.Managers.Systems
 {
     public class SignalListener : MonoBehaviour
     {
+        /******************************************
+         *             SIGNAL AND EVENT           *
+         ******************************************/
         public SignalSender signal;
         public UnityEvent signalEvent;
+
+        /******************************************
+         *             SIGNAL RAISE HANDLER       *
+         ******************************************/
         public void OnSignalRaised()
         {
             signalEvent.Invoke();
         }
-
+        
         private void OnEnable()
         {
             signal.RegisterListener(this);

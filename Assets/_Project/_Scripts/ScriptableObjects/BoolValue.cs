@@ -1,4 +1,5 @@
 using UnityEngine;
+using _Project._Scripts.Managers.Systems; // Required for IResettable
 
 /****************************************************
  *               BOOL VALUE CLASS                  *
@@ -19,13 +20,13 @@ using UnityEngine;
 namespace _Project._Scripts.ScriptableObjects
 {
     [CreateAssetMenu(fileName = "BoolValue", menuName = "ScriptableObjects/BoolValue", order = 1)]
-    public class BoolValue : ScriptableObject, ISerializationCallbackReceiver
+    public class BoolValue : ScriptableObject, ISerializationCallbackReceiver, IResettable
     {
         /******************************************
          *           INITIAL AND RUNTIME VALUE    *
          ******************************************/
         public bool initialValue;
-        
+
         [HideInInspector]
         public bool runtimeValue;
 
@@ -34,9 +35,17 @@ namespace _Project._Scripts.ScriptableObjects
          ******************************************/
         public void OnAfterDeserialize()
         {
-            runtimeValue = initialValue;  
+            runtimeValue = initialValue;
         }
 
         public void OnBeforeSerialize() {}
+
+        /******************************************
+         *        RESETTABLE IMPLEMENTATION       *
+         ******************************************/
+        public void ResetToDefault()
+        {
+            runtimeValue = initialValue;
+        }
     }
 }
